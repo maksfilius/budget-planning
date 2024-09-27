@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary-color: #3B4447;
+    --secondary-color: #212420;
+    --yellow: #ffe53b;
+    --red: #ff2525;
+    --white: #ffffff;
+}
+
+body {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+h2 {
+    font-size: clamp(20px, 3vw, 32px);
+}
+
+.block {
+    background-color: var(--primary-color);
+}
+
+.tabs-btn {
+    background: linear-gradient(135deg, rgba(255, 229, 59, 1) 0%, rgba(255, 37, 37, 1) 70%);
+    color: var(--white);
+    padding: 20px 30px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: 600;
+    transition: all 0.5s ease;
+}
+
+.tabs-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 229, 59, 1) 0%, rgba(255, 37, 37, 1) 90%);
+    transition: all 0.5s ease;
+}
