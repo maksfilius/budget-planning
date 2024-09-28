@@ -1,43 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useIncome } from '../contexts/IncomeContext';
 import Link from 'next/link';
-import RemoveBtn from './RemoveBtn';
-
-const fetchRecords = async () => {
-    try {
-        const res = await fetch('http://localhost:3000/api/records', {
-            cache: 'no-store',
-        });
-
-        if (!res.ok) {
-            throw new Error('Failed to fetch records');
-        }
-
-        return res.json();
-    } catch (error) {
-        console.error('Error loading records: ', error);
-        return { records: [] };
-    }
-};
+import RemoveIncomeBtn from './RemoveBtn';
 
 export default function IncomeItem() {
-    const [records, setRecords] = useState([]);
-
-    useEffect(() => {
-        const loadRecords = async () => {
-            const data = await fetchRecords();
-            setRecords(data.records || []);
-        };
-
-        loadRecords();
-    }, []);
-
-    const totalIncome = records.reduce((sum, item) => {
-        const amountString = item.title.replace(/[.,]/g, '');
-        const amount = parseFloat(amountString) / 100; 
-        return sum + (isNaN(amount) ? 0 : amount); 
-    }, 0);
+    const { records, totalIncome, removeRecord } = useIncome();
 
     return (
         <>
@@ -48,8 +16,8 @@ export default function IncomeItem() {
                         <p>{item.description}</p>
                     </div>
                     <div className='flex items-center gap-4'>
-                        <RemoveBtn id={item._id} />
-                        <Link href={`/dashboard/editRecord/${item._id}`}>
+                        <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
+                        <Link href={`/dashboard/editIncome/${item._id}`}>
                             edit
                         </Link>
                     </div>

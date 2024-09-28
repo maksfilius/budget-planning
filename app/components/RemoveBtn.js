@@ -1,21 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+export default function RemoveBtn({ id, onRemove }) {
+    const removeRecord = async () => {
+        const confirmed = confirm("Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?");
 
-export default function  RemoveBtn({ id }) {
-    const router = useRouter();
-    const removeRecord = async() => {
-        
-        const confirmed = confirm("Are you sure?");
-
-        if(confirmed) {
+        if (confirmed) {
             try {
                 const res = await fetch(`http://localhost:3000/api/records?id=${id}`, {
                     method: "DELETE",
                 });
 
                 if (res.ok) {
-                    window.location.reload(); 
+                    onRemove();
                 } else {
                     console.error('Failed to delete the record');
                 }
@@ -23,11 +19,11 @@ export default function  RemoveBtn({ id }) {
                 console.error('Error during deletion:', error);
             }
         }
-    }
+    };
 
     return (
-        <>
-            <button onClick={removeRecord} className='btn text-red-400'>remove</button>
-        </>
-    )
+        <button onClick={removeRecord} className='btn text-red-400'>
+            Entfernen
+        </button>
+    );
 }
