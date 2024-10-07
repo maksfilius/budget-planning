@@ -10,7 +10,20 @@ const expenseSchema = new Schema(
         description: {
             type: String,
             required: true,
-        }
+        },
+        date: {
+            type: Date,
+            required: true,
+        },
+        isRecurring: {
+            type: Boolean,
+            default: false,
+        },
+        recurrenceFrequency: {
+            type: String,
+            enum: ['daily', 'weekly', 'monthly', 'yearly'],
+            default: 'monthly',
+        },
     },
     {
         timestamps: true,

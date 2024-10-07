@@ -1,10 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-export default function RemoveOutcomeBtn({ id }) {
-    const router = useRouter();
-
+export default function RemoveOutcomeBtn({ id, onRemove }) {
     const removeOutcome = async () => {
         const confirmed = confirm("Are you sure you want to delete this expense?");
 
@@ -15,7 +11,7 @@ export default function RemoveOutcomeBtn({ id }) {
                 });
 
                 if (res.ok) {
-                    window.location.reload(); 
+                    onRemove(); 
                 } else {
                     console.error('Failed to delete the expense:', errorData.message);
                 }

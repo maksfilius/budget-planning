@@ -4,14 +4,14 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request) {
     try {
-        const { title, description } = await request.json();
+        const { title, description, date, isRecurring = false, recurrenceFrequency = 'monthly'  } = await request.json();
 
-        if (!title || !description) {
-            return NextResponse.json({ message: 'Title and description are required' }, { status: 400 });
+        if (!title || !description || !date) {
+          return NextResponse.json({ message: 'Title, description, and date are required' }, { status: 400 });
         }
 
         await connectMongoDB();
-        const newExpense = await Expense.create({ title, description });
+        const newExpense = await Expense.create({ title, description, date, isRecurring, recurrenceFrequency });
 
         return NextResponse.json({ message: 'Expense Created', expense: newExpense }, { status: 201 });
     } catch (error) {

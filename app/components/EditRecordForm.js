@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function EditRecordForm({ id, title, description }) {
+export default function EditRecordForm({ id, title, description, date }) {
 
     const [newTitle, setNewTitle] = useState(title);
     const [newDescription, setNewDescription] = useState(description);
+    const [newDate, setNewDate] = useState(date);
     const router = useRouter();
 
     const handleSubmit = async (e) => {
@@ -18,7 +19,7 @@ export default function EditRecordForm({ id, title, description }) {
                 headers: {
                     "Content-type": "application/json",
                 },
-                body: JSON.stringify({ newTitle, newDescription }),
+                body: JSON.stringify({ newTitle, newDescription, newDate }),
             });
 
             if(!res.ok) {
@@ -48,6 +49,15 @@ export default function EditRecordForm({ id, title, description }) {
                 placeholder="description" 
                 className="border border-slate-500 px-8 py-2"
             />
+
+            <input 
+                onChange={(e) => setNewDate(e.target.value)}
+                value={newDate}
+                type="date"
+                placeholder="Date" 
+                className="border border-slate-500 px-8 py-2"
+            />
+
 
             <button className="bg-green-600 font-bold text-white py-3 px-6 w-fit">
                 Update Topic

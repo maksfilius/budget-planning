@@ -24,7 +24,7 @@ export default function IncomeItem() {
                             </div>
                             <div className='flex items-center gap-4'>
                                 <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
-                                <Link href={`/dashboard/editIncome/${item._id}`}>
+                                <Link href={`/dashboard/editRecord/${item._id}`}>
                                     edit
                                 </Link>
                             </div>
@@ -46,7 +46,7 @@ export default function IncomeItem() {
                             </div>
                             <div className='flex items-center gap-4'>
                                 <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
-                                <Link href={`/dashboard/editIncome/${item._id}`}>
+                                <Link href={`/dashboard/editRecord/${item._id}`}>
                                     edit
                                 </Link>
                             </div>

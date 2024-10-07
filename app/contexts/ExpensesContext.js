@@ -5,25 +5,61 @@ const ExpensesContext = createContext();
 export const ExpensesProvider = ({ children }) => {
     const [expenses, setExpenses] = useState([]);
     const [totalExpenses, setTotalExpenses] = useState(0);
+    const [recurringExpenses, setRecurringExpenses] = useState(0);
+    const [nonRecurringExpenses, setNonRecurringExpenses] = useState(0);
 
     const fetchExpenses = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/expenses');
             const data = await response.json();
             setExpenses(data.expenses || []);
-            calculateTotalExpenses(data.expenses || []);
+            calculateExpenses(data.expenses || []);
         } catch (error) {
             console.error('Error loading expenses: ', error);
         }
     };
 
-    const calculateTotalExpenses = (expenses) => {
-        const total = expenses.reduce((sum, item) => {
+    const calculateExpenses = (expenses) => {
+        let total = 0;
+        let recurringTotal = 0;
+        let nonRecurringTotal = 0;
+
+        expenses.forEach(item => {
             const amountString = item.title.replace(/[.,€\s]/g, '');
-            const amount = parseFloat(amountString) / 100; 
-            return sum + (isNaN(amount) ? 0 : amount); 
-        }, 0);
+            const amount = parseFloat(amountString) / 100;
+
+            if (!isNaN(amount)) {
+                if (item.isRecurring) {
+                    recurringTotal += amount;
+                } else {
+                    nonRecurringTotal += amount;
+                }
+                total += amount;
+            }
+        });
+
         setTotalExpenses(total);
+        setRecurringExpenses(recurringTotal);
+        setNonRecurringExpenses(nonRecurringTotal);
+    };
+
+    const removeRecord = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/records?id=${id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete the record');
+            }
+    
+            setExpenses((prevExpenses) => {
+                const updatedExpenses = prevExpenses.filter(record => record._id !== id);
+                calculateExpenses(updatedExpenses);
+                return updatedExpenses;
+            });
+        } catch (error) {
+            console.error('Error deleting income record: ', error);
+        }
     };
 
     useEffect(() => {
@@ -31,7 +67,7 @@ export const ExpensesProvider = ({ children }) => {
     }, []);
 
     return (
-        <ExpensesContext.Provider value={{ expenses, totalExpenses }}>
+        <ExpensesContext.Provider value={{ expenses, totalExpenses, recurringExpenses, nonRecurringExpenses, removeRecord }}>
             {children}
         </ExpensesContext.Provider>
     );

@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 export default function AddExpense() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [date, setDate] = useState("");
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurrenceFrequency, setRecurrenceFrequency] = useState("monthly");
     const [error, setError] = useState("");
 
     const router = useRouter();
@@ -13,7 +16,7 @@ export default function AddExpense() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!title || !description) {
+        if(!title || !description || !date) {
             alert("Please fill in all fields.");
             return;
         }
@@ -24,7 +27,7 @@ export default function AddExpense() {
                 headers: {
                     "Content-type": "application/json"
                 },
-                body: JSON.stringify({ title, description })
+                body: JSON.stringify({ title, description, date, isRecurring, recurrenceFrequency })
             });
 
             if (res.ok) {
@@ -75,6 +78,36 @@ export default function AddExpense() {
                 placeholder="Beschreibung"
                 className="border border-slate-500 px-8 py-2"
             />
+
+            <input 
+                onChange={(e) => setDate(e.target.value)}
+                value={date}
+                type="date"
+                placeholder="Date" 
+                className="border border-slate-500 px-8 py-2"
+            />
+
+            <label>
+                <input 
+                    type="checkbox" 
+                    checked={isRecurring} 
+                    onChange={(e) => setIsRecurring(e.target.checked)} 
+                />
+                Is this recurring?
+            </label>
+
+            {isRecurring && (
+                <select
+                    value={recurrenceFrequency}
+                    onChange={(e) => setRecurrenceFrequency(e.target.value)}
+                    className="border border-slate-500 px-8 py-2"
+                >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            )}
 
             <button className="bg-green-600 font-bold text-white py-3 px-6 w-fit">
                 Add Expense
