@@ -32,7 +32,7 @@ const DashboardContent = () => {
     };
 
     return (
-        <div className='flex flex-wrap lg:flex-nowrap h-screen'>
+        <div className='flex flex-col lg:flex-row h-screen'>
             <section className='basis-full lg:basis-1/5 block m-8 rounded-3xl'>
                 <menu className='flex flex-col items-center'>
                     <TabButton 

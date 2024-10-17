@@ -42,6 +42,7 @@ export default function ExpensesItem() {
                             <div>
                                 <h2 className='font-bold text-2xl'>{item.title}</h2>
                                 <p>{item.description}</p>
+                                <p>Date: {new Date(item.date).toLocaleDateString()}</p>
                                 <p>Recurrence: {item.recurrenceFrequency}</p>
                             </div>
                             <div className='flex items-center gap-4'>

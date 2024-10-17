@@ -7,6 +7,9 @@ export const IncomeProvider = ({ children }) => {
     const [totalIncome, setTotalIncome] = useState(0);
     const [recurringIncome, setRecurringIncome] = useState(0);
     const [nonRecurringIncome, setNonRecurringIncome] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [filteredNonRecurringItems, setFilteredNonRecurringItems] = useState([]);
+    const [totalNonRecurringIncomeForMonth, setTotalNonRecurringIncomeForMonth] = useState(0);
 
     const fetchRecords = async () => {
         try {
@@ -15,6 +18,7 @@ export const IncomeProvider = ({ children }) => {
             const recordsData = data.records || [];
             setRecords(recordsData);
             calculateIncome(recordsData);
+            filterNonRecurringIncomeForMonth(recordsData, selectedMonth);
         } catch (error) {
             console.error('Error loading income records: ', error);
         }
@@ -44,6 +48,26 @@ export const IncomeProvider = ({ children }) => {
         setNonRecurringIncome(nonRecurringTotal);
     };
 
+    const filterNonRecurringIncomeForMonth = (records, month) => {
+        const filteredItems = records.filter(item => {
+            const itemDate = new Date(item.date);
+            return !item.isRecurring && itemDate.getMonth() === month;
+        });
+
+        setFilteredNonRecurringItems(filteredItems);
+
+        const totalForMonth = filteredItems.reduce((total, item) => {
+            return total + parseFloat(item.title.replace('€', '').replace('.', '').replace(',', '.'));
+        }, 0);
+
+        setTotalNonRecurringIncomeForMonth(totalForMonth);
+    };
+
+    const setMonth = (month) => {
+        setSelectedMonth(month);
+        filterNonRecurringIncomeForMonth(records, month);
+    };
+
     const removeRecord = async (id) => {
         try {
             const response = await fetch(`http://localhost:3000/api/records?id=${id}`, {
@@ -56,6 +80,7 @@ export const IncomeProvider = ({ children }) => {
             setRecords((prevRecords) => {
                 const updatedRecords = prevRecords.filter(record => record._id !== id);
                 calculateIncome(updatedRecords);
+                filterNonRecurringIncomeForMonth(updatedRecords, selectedMonth);
                 return updatedRecords;
             });
         } catch (error) {
@@ -63,13 +88,22 @@ export const IncomeProvider = ({ children }) => {
         }
     };
     
-
     useEffect(() => {
         fetchRecords();
     }, []);
 
     return (
-        <IncomeContext.Provider value={{ records, totalIncome, recurringIncome, nonRecurringIncome, removeRecord }}>
+        <IncomeContext.Provider value={{ 
+            records, 
+            totalIncome, 
+            recurringIncome, 
+            nonRecurringIncome, 
+            filteredNonRecurringItems, 
+            totalNonRecurringIncomeForMonth,
+            selectedMonth, 
+            setMonth,
+            removeRecord 
+        }}>
             {children}
         </IncomeContext.Provider>
     );

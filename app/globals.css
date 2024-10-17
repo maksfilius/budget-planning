@@ -28,6 +28,11 @@ h2 {
     background-color: var(--primary-color);
 }
 
+input,
+select {
+    color: #000000;
+}
+
 .tabs-btn {
     color: var(--white);
     padding: 20px 30px;
