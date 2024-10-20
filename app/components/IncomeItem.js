@@ -1,21 +1,15 @@
-"use client";
-
-import { useState } from 'react';
+import { useMonth } from '../contexts/MonthContext';
 import { useIncome } from '../contexts/IncomeContext';
 import Link from 'next/link';
 import RemoveIncomeBtn from './RemoveBtn';
+import { RiEditLine } from "react-icons/ri";
 
 export default function IncomeItem() {
-    const { records, totalIncome, recurringIncome, nonRecurringIncome, removeRecord } = useIncome();
+    const { selectedMonth } = useMonth();
+    const { records, recurringIncome,nonRecurringIncome, removeRecord } = useIncome();
     
     const recurringItems = records.filter(item => item.isRecurring);
     const nonRecurringItems = records.filter(item => !item.isRecurring);
-
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-
-    const months = Array.from({ length: 12 }, (_, i) => {
-        return new Date(0, i).toLocaleString('de-DE', { month: 'long' });
-    });
 
     const filteredNonRecurringItems = nonRecurringItems.filter(item => {
         const itemDate = new Date(item.date);
@@ -26,77 +20,65 @@ export default function IncomeItem() {
         return total + parseFloat(item.title.replace('€', '').replace('.', '').replace(',', '.'));
     }, 0);
 
+    const totalMonthlyIncome = totalNonRecurringIncome + recurringIncome;
+
     return (
-        <>
-            <div className='flex flex-wrap justify-around'>
+        <div className='flex flex-wrap mx-6 grow'>
+            <div className='flex justify-center lg:justify-between w-full lg:h-5/6 flex-wrap'>
                 <div>
-                    <h2 className="text-center">One-time Income</h2>
-                    
-                    <div className="text-center mb-4">
-                        <label htmlFor="month-select">Select Month: </label>
-                        <select
-                            id="month-select"
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                            className="ml-2 border border-slate-300 p-1"
-                        >
-                            {months.map((month, index) => (
-                                <option key={index} value={index}>
-                                    {month}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <h3 className="text-center">One-time Income</h3>
                     
                     {filteredNonRecurringItems.map(item => (
-                        <div key={item._id} className='p-4 w-64 border border-slate-300 flex justify-between mx-auto my-5'>
-                            <div>
-                                <h2 className='font-bold text-2xl'>{item.title}</h2>
-                                <p>{item.description}</p>
-                                <p>Date: {new Date(item.date).toLocaleDateString()}</p>
-                            </div>
-                            <div className='flex items-center gap-4'>
+                        <div key={item._id} className='w-64 p-4 rounded-lg justify-between mx-auto my-5 block'>
+                            <div className="flex gap-2.5 w-full items-center">
+                                <div className='font-bold text-2xl me-auto'>{item.title}</div>
                                 <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
                                 <Link href={`/dashboard/editRecord/${item._id}`}>
-                                    edit
+                                    <RiEditLine />
                                 </Link>
                             </div>
+                            
+                            <p>{item.description}</p>
+                            <p>Date: {new Date(item.date).toLocaleDateString()}</p>
                         </div>
                     ))}
-                    <h3 className='font-bold'>
+                    <h4 className='font-bold'>
                         Total Non-Recurring Income: {totalNonRecurringIncome.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
-                    </h3>
+                    </h4>
                 </div>
 
-                <div>
-                    <h2 className="text-center">Recurring Income</h2>
-                    {recurringItems.map(item => (
-                        <div key={item._id} className='p-4 w-64 border border-slate-300 flex justify-between mx-auto my-5'>
-                            <div>
-                                <h2 className='font-bold text-2xl'>{item.title}</h2>
-                                <p>{item.description}</p>
-                                <p>Date: {new Date(item.date).toLocaleDateString()}</p>
-                                <p>Recurrence: {item.recurrenceFrequency}</p>
+                <div >
+                    <h3 className="text-center">Recurring Income</h3>
+                    <div className='lg:h-5/6 overflow-y-scroll'>
+                        {recurringItems.map(item => (
+                            <div key={item._id} className='w-64 p-4 rounded-lg justify-between mx-auto my-5 block'>
+                                <div className="flex gap-2.5 w-full items-center">
+                                    <div className='font-bold text-2xl me-auto'>{item.title}</div>
+                                    <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
+                                    <Link href={`/dashboard/editRecord/${item._id}`}>
+                                        <RiEditLine />
+                                    </Link>
+                                </div>
+
+                                <p className='text-sm'>{item.description}</p>
+                                <div className='flex justify-between'>
+                                    <p className='text-xs'>Date: {new Date(item.date).toLocaleDateString()}</p>
+                                    <p className='text-xs'>Recurrence: {item.recurrenceFrequency}</p>
+                                </div>
                             </div>
-                            <div className='flex items-center gap-4'>
-                                <RemoveIncomeBtn id={item._id} onRemove={() => removeRecord(item._id)} />
-                                <Link href={`/dashboard/editRecord/${item._id}`}>
-                                    edit
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
-                    <h3 className='font-bold'>
+                        ))}
+                    </div>
+                    <h4 className='font-bold'>
                         Total Recurring Income: {recurringIncome.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
-                    </h3>
-                </div>
-
-                <div className='text-center mt-6 w-full'>
-                    <h3 className='font-bold'>
-                        Total Income: {totalIncome.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
-                    </h3>
+                    </h4>
                 </div>
             </div>
-        </>
+
+            <div className='text-right mt-6 w-full'>
+                <h4 className='font-bold'>
+                    Total monthly Income: {totalMonthlyIncome.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
+                </h4>
+            </div>
+        </div>
     );
 }

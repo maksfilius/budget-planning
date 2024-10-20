@@ -1,4 +1,5 @@
 "use client";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function RemoveBtn({ id, onRemove }) {
     const removeRecord = async () => {
@@ -23,7 +24,7 @@ export default function RemoveBtn({ id, onRemove }) {
 
     return (
         <button onClick={removeRecord} className='btn text-red-400'>
-            Entfernen
+            <RiDeleteBin6Line />
         </button>
     );
 }
